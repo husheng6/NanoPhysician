@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// 摄像机跟随目标，移动范围限制在地图内。
+/// 摄像机跟随目标，移动范围限制在地图内；Boss 战时与玩家同步锁定决斗区。
 /// 挂载到 Main Camera 上。
 /// </summary>
 public class CameraFollow : MonoBehaviour
@@ -16,6 +16,7 @@ public class CameraFollow : MonoBehaviour
     private float maxX;
     private float minY;
     private float maxY;
+    private bool usingArenaBounds;
 
     private void Awake()
     {
@@ -38,6 +39,7 @@ public class CameraFollow : MonoBehaviour
                 target = player.transform;
         }
 
+        usingArenaBounds = PlayerMovementBounds.IsArenaLocked;
         CacheCameraBounds();
 
         if (target != null)
@@ -49,13 +51,24 @@ public class CameraFollow : MonoBehaviour
         if (target == null)
             return;
 
+        bool arenaLocked = PlayerMovementBounds.IsArenaLocked;
+        if (arenaLocked != usingArenaBounds)
+        {
+            usingArenaBounds = arenaLocked;
+            CacheCameraBounds();
+        }
+
         Vector3 desired = GetDesiredPosition();
         transform.position = Vector3.Lerp(transform.position, desired, smoothSpeed * Time.deltaTime);
     }
 
     private void CacheCameraBounds()
     {
-        if (cam == null || !MapBoundsUtility.TryGetBounds(mapRoot, out Bounds mapBounds))
+        if (cam == null)
+            return;
+
+        if (!PlayerMovementBounds.TryGetMovementBounds(mapRoot, out Bounds mapBounds)
+            && !MapBoundsUtility.TryGetBounds(mapRoot, out mapBounds))
             return;
         float halfHeight = cam.orthographicSize;
         float halfWidth = halfHeight * cam.aspect;

@@ -11,7 +11,38 @@ public class PlayerController : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     private Vector2 moveInput;
+    private Vector2 facingDirection = Vector2.right;
     private bool faceRight = true;
+
+    /// <summary>当前面朝方向（基于最近一次移动输入，默认向右）。</summary>
+    public Vector2 FacingDirection => facingDirection;
+
+    public void SetMoveSpeed(float speed)
+    {
+        moveSpeed = Mathf.Max(0.1f, speed);
+    }
+
+    public void SetFacingFromDirection(Vector2 direction)
+    {
+        if (direction.sqrMagnitude <= 0.0001f)
+            return;
+
+        facingDirection = direction.normalized;
+
+        if (spriteRenderer == null || Mathf.Approximately(facingDirection.x, 0f))
+            return;
+
+        if (facingDirection.x > 0f && !faceRight)
+        {
+            faceRight = true;
+            spriteRenderer.flipX = true;
+        }
+        else if (facingDirection.x < 0f && faceRight)
+        {
+            faceRight = false;
+            spriteRenderer.flipX = false;
+        }
+    }
 
     private void Awake()
     {
@@ -27,11 +58,17 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (LevelGameFlow.IsLevelEnded)
+            return;
+
         moveInput.x = Input.GetAxisRaw("Horizontal");
         moveInput.y = Input.GetAxisRaw("Vertical");
 
         if (moveInput.sqrMagnitude > 1f)
             moveInput.Normalize();
+
+        if (moveInput.sqrMagnitude > 0.0001f)
+            facingDirection = moveInput.normalized;
 
         Vector3 nextPosition = transform.position + (Vector3)(moveInput * moveSpeed * Time.deltaTime);
         transform.position = ClampToMap(nextPosition);
@@ -40,17 +77,19 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 ClampToMap(Vector3 position)
     {
-        if (!MapBoundsUtility.TryGetBounds(mapRoot, out Bounds mapBounds))
+        if (!PlayerMovementBounds.TryGetMovementBounds(mapRoot, out Bounds bounds)
+            && !MapBoundsUtility.TryGetBounds(mapRoot, out bounds))
             return position;
+
         Vector2 halfSize = GetHalfSize();
 
         position.x = Mathf.Clamp(position.x,
-            mapBounds.min.x + halfSize.x + boundsPadding,
-            mapBounds.max.x - halfSize.x - boundsPadding);
+            bounds.min.x + halfSize.x + boundsPadding,
+            bounds.max.x - halfSize.x - boundsPadding);
 
         position.y = Mathf.Clamp(position.y,
-            mapBounds.min.y + halfSize.y + boundsPadding,
-            mapBounds.max.y - halfSize.y - boundsPadding);
+            bounds.min.y + halfSize.y + boundsPadding,
+            bounds.max.y - halfSize.y - boundsPadding);
 
         return position;
     }

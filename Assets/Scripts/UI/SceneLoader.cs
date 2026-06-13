@@ -14,6 +14,7 @@ public static class SceneLoader
             return;
         }
 
+        Time.timeScale = 1f;
         SceneManager.LoadScene(sceneName);
     }
 }

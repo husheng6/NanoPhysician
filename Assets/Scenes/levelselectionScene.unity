@@ -172,7 +172,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   level1Button: {fileID: 1488231521}
+  level2Button: {fileID: 1110000432}
+  level3Button: {fileID: 878177704}
   level1SceneName: level1Scence
+  level2SceneName: level2Scence
+  level3SceneName: level3Scence
 --- !u!114 &708089408
 MonoBehaviour:
   m_ObjectHideFlags: 0
