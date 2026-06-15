@@ -11,6 +11,7 @@ public class StartMenuController : MonoBehaviour
     [SerializeField] private Button startGameButton;
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button scienceButton;
+    [SerializeField] private Button shopButton;
 
     [Header("场景跳转")]
     [SerializeField] private string levelSelectionSceneName = "levelselectionScene";
@@ -23,6 +24,8 @@ public class StartMenuController : MonoBehaviour
 
     private void Awake()
     {
+        ResolveShopButton();
+
         if (startGameButton != null)
             startGameButton.onClick.AddListener(StartGame);
 
@@ -31,6 +34,26 @@ public class StartMenuController : MonoBehaviour
 
         if (scienceButton != null)
             scienceButton.onClick.AddListener(OpenScience);
+
+        if (shopButton != null)
+            shopButton.onClick.AddListener(OpenShop);
+    }
+
+    private void ResolveShopButton()
+    {
+        if (shopButton != null)
+            return;
+
+        Button[] buttons = GetComponentsInChildren<Button>(true);
+        foreach (Button button in buttons)
+        {
+            string name = button.gameObject.name.ToLowerInvariant();
+            if (name.Contains("shop") || name.Contains("商店"))
+            {
+                shopButton = button;
+                return;
+            }
+        }
     }
 
     public void StartGame()
@@ -60,6 +83,11 @@ public class StartMenuController : MonoBehaviour
         sciencePanel.OpenPanel();
     }
 
+    public void OpenShop()
+    {
+        ShopUI.ShowForMenu();
+    }
+
     private void OnDestroy()
     {
         if (startGameButton != null)
@@ -70,5 +98,8 @@ public class StartMenuController : MonoBehaviour
 
         if (scienceButton != null)
             scienceButton.onClick.RemoveListener(OpenScience);
+
+        if (shopButton != null)
+            shopButton.onClick.RemoveListener(OpenShop);
     }
 }

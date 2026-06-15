@@ -24,22 +24,34 @@ public static class LevelCombatBootstrap
         LevelGameFlow.ResetState();
         GameOverUI.ResetState();
         LevelVictoryUI.ResetState();
+        ShopUI.ResetState();
         LevelVictoryTracker.ResetState();
+        LevelCurrencyDropper.ResetState();
+        Level1SegmentDialogueTrigger.ResetState();
         PlayerMovementBounds.ClearArena();
 
         switch (scene.name)
         {
             case Level1SceneName:
-                SetupLevel(PlayerCombatSetup.Setup, SetupLevel1Spawner);
-                BeginVictoryTracking(GetNextSceneName(scene.name));
+                SetupLevel(PlayerCombatSetup.Setup, null);
+                Level1IntroDialogueRunner.Play(() =>
+                {
+                    BgmManager.PlayBattle();
+                    SetupLevel1Spawner();
+                    Level1SegmentDialogueTrigger.Setup();
+                    BeginVictoryTracking(GetNextSceneName(scene.name));
+                    LevelCurrencyDropper.SetupForCurrentLevel();
+                });
                 break;
             case Level2SceneName:
                 SetupLevel(PlayerCombatSetup.Setup, SetupLevel2Spawner);
                 BeginVictoryTracking(GetNextSceneName(scene.name));
+                LevelCurrencyDropper.SetupForCurrentLevel();
                 break;
             case Level3SceneName:
                 SetupLevel(PlayerCombatSetup.Setup, SetupLevel3Spawner);
                 BeginVictoryTracking(null);
+                LevelCurrencyDropper.SetupForCurrentLevel();
                 break;
         }
     }

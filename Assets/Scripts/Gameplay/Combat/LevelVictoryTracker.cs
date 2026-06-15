@@ -21,6 +21,9 @@ public static class LevelVictoryTracker
         ResetState();
         nextSceneName = nextLevelSceneName;
 
+        if (LevelGameFlow.IsIntroActive)
+            return;
+
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
         foreach (GameObject enemy in enemies)
         {

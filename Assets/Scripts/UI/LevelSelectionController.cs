@@ -12,7 +12,7 @@ public class LevelSelectionController : MonoBehaviour
     [SerializeField] private Button level3Button;
 
     [Header("场景名称")]
-    [SerializeField] private string level1SceneName = "level1Scence";
+    [SerializeField] private string level1SceneName = "leve1polt";
     [SerializeField] private string level2SceneName = "level2Scence";
     [SerializeField] private string level3SceneName = "level3Scence";
 
@@ -59,17 +59,17 @@ public class LevelSelectionController : MonoBehaviour
 
     public void LoadLevel1()
     {
-        SceneLoader.Load(level1SceneName);
+        SceneLoader.LoadNewRun(level1SceneName);
     }
 
     public void LoadLevel2()
     {
-        SceneLoader.Load(level2SceneName);
+        SceneLoader.LoadNewRun(level2SceneName);
     }
 
     public void LoadLevel3()
     {
-        SceneLoader.Load(level3SceneName);
+        SceneLoader.LoadNewRun(level3SceneName);
     }
 
     private void OnDestroy()

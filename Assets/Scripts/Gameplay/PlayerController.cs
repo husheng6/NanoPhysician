@@ -10,9 +10,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float boundsPadding = 0.1f;
 
     private SpriteRenderer spriteRenderer;
+    private PlayerAnimator playerAnimator;
     private Vector2 moveInput;
     private Vector2 facingDirection = Vector2.right;
-    private bool faceRight = true;
 
     /// <summary>当前面朝方向（基于最近一次移动输入，默认向右）。</summary>
     public Vector2 FacingDirection => facingDirection;
@@ -28,25 +28,16 @@ public class PlayerController : MonoBehaviour
             return;
 
         facingDirection = direction.normalized;
-
-        if (spriteRenderer == null || Mathf.Approximately(facingDirection.x, 0f))
-            return;
-
-        if (facingDirection.x > 0f && !faceRight)
-        {
-            faceRight = true;
-            spriteRenderer.flipX = true;
-        }
-        else if (facingDirection.x < 0f && faceRight)
-        {
-            faceRight = false;
-            spriteRenderer.flipX = false;
-        }
     }
 
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        playerAnimator = GetComponent<PlayerAnimator>();
+
+        // 左右行走使用独立动画，保持默认朝向，避免 flipX 把向右动画镜像成错误姿态。
+        if (spriteRenderer != null)
+            spriteRenderer.flipX = false;
 
         if (mapRoot == null)
         {
@@ -58,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (LevelGameFlow.IsLevelEnded)
+        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
             return;
 
         moveInput.x = Input.GetAxisRaw("Horizontal");
@@ -72,7 +63,12 @@ public class PlayerController : MonoBehaviour
 
         Vector3 nextPosition = transform.position + (Vector3)(moveInput * moveSpeed * Time.deltaTime);
         transform.position = ClampToMap(nextPosition);
-        UpdateFacing();
+
+        if (playerAnimator == null)
+            playerAnimator = GetComponent<PlayerAnimator>();
+
+        if (playerAnimator != null)
+            playerAnimator.SetMovement(moveInput);
     }
 
     private Vector3 ClampToMap(Vector3 position)
@@ -100,22 +96,5 @@ public class PlayerController : MonoBehaviour
             return spriteRenderer.bounds.extents;
 
         return Vector2.one * 0.25f;
-    }
-
-    private void UpdateFacing()
-    {
-        if (spriteRenderer == null || Mathf.Approximately(moveInput.x, 0f))
-            return;
-
-        if (moveInput.x > 0f && !faceRight)
-        {
-            faceRight = true;
-            spriteRenderer.flipX = true;
-        }
-        else if (moveInput.x < 0f && faceRight)
-        {
-            faceRight = false;
-            spriteRenderer.flipX = false;
-        }
     }
 }

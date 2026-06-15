@@ -14,11 +14,18 @@ public static class LevelGameFlow
     public static bool IsGameOver => isGameOver;
     public static bool IsVictory => isVictory;
     public static bool IsLevelEnded => isGameOver || isVictory;
+    public static bool IsIntroActive { get; private set; }
+
+    public static void SetIntroActive(bool active)
+    {
+        IsIntroActive = active;
+    }
 
     public static void ResetState()
     {
         isGameOver = false;
         isVictory = false;
+        IsIntroActive = false;
         Time.timeScale = 1f;
     }
 
@@ -43,12 +50,12 @@ public static class LevelGameFlow
 
     public static void NotifyVictory(string nextSceneName)
     {
-        if (IsLevelEnded)
+        if (IsLevelEnded || IsIntroActive)
             return;
 
         isVictory = true;
         Time.timeScale = 0f;
-        LevelVictoryUI.Show(nextSceneName);
+        ShopUI.Show(nextSceneName);
     }
 
     public static void GoToNextLevel(string sceneName)
@@ -66,6 +73,8 @@ public static class LevelGameFlow
     public static void ReturnToStartScene()
     {
         ResetState();
+        RunProgression.ResetRun();
+        ShopUI.ResetState();
         SceneLoader.Load(StartSceneName);
     }
 }

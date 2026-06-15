@@ -21,16 +21,7 @@ public class GameOverUI : MonoBehaviour
             return;
         }
 
-        Canvas canvas = FindObjectOfType<Canvas>();
-        if (canvas == null)
-        {
-            GameObject canvasObject = new GameObject("CombatUI");
-            canvas = canvasObject.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.sortingOrder = 200;
-            canvasObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            canvasObject.AddComponent<GraphicRaycaster>();
-        }
+        Canvas canvas = CombatUiCanvas.GetOrCreate(200);
 
         GameObject panelObject = new GameObject("GameOverPanel");
         panelObject.transform.SetParent(canvas.transform, false);

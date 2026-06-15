@@ -1,14 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// 玩家射击：鼠标左键点击，向点击方向发射子弹。
+/// 玩家远程射击：鼠标右键点击，向点击方向发射子弹。
 /// </summary>
 [RequireComponent(typeof(PlayerController))]
 [RequireComponent(typeof(PlayerStats))]
 public class PlayerShooting : MonoBehaviour
 {
     [SerializeField] private float spawnOffset = 0.5f;
-    [SerializeField] private int aimMouseButton = 0;
+    [SerializeField] private int aimMouseButton = 1;
 
     private PlayerController playerController;
     private PlayerStats playerStats;
@@ -24,7 +24,7 @@ public class PlayerShooting : MonoBehaviour
 
     private void Update()
     {
-        if (LevelGameFlow.IsLevelEnded)
+        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
             return;
 
         if (!Input.GetMouseButtonDown(aimMouseButton))
@@ -34,6 +34,9 @@ public class PlayerShooting : MonoBehaviour
             return;
 
         if (!TryGetAimDirection(out Vector2 direction))
+            return;
+
+        if (!playerStats.TryConsumeMana(playerStats.ManaCostPerShot))
             return;
 
         Fire(direction);
@@ -68,6 +71,7 @@ public class PlayerShooting : MonoBehaviour
     private void Fire(Vector2 direction)
     {
         playerController.SetFacingFromDirection(direction);
+        SfxManager.PlayRanged();
 
         Vector3 spawnPosition = transform.position + (Vector3)(direction * spawnOffset);
 

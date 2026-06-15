@@ -9,5 +9,10 @@ public enum PlayerStatType
     FireCooldown,
     ProjectileSpeed,
     ProjectileRange,
-    MoveSpeed
+    MoveSpeed,
+    MeleeAttackDamage,
+    MeleeAttackRange,
+    MeleeAttackCooldown,
+    MaxMana,
+    ManaCostPerShot
 }

@@ -17,9 +17,16 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private float bonusProjectileSpeed;
     [SerializeField] private float bonusProjectileRange;
     [SerializeField] private float bonusMoveSpeed;
+    [SerializeField] private int bonusMeleeAttackDamage;
+    [SerializeField] private float bonusMeleeAttackRange;
+    [SerializeField] private float bonusMeleeAttackCooldown;
+    [SerializeField] private int bonusMaxMana;
+    [SerializeField] private int bonusManaCostPerShot;
 
     private Health health;
     private PlayerController playerController;
+    private int currentMana;
+    private float manaRegenAccumulator;
 
     public int MaxHealth => Config.maxHealth + bonusMaxHealth;
     public int Defense => Config.defense + bonusDefense;
@@ -28,6 +35,13 @@ public class PlayerStats : MonoBehaviour
     public float ProjectileSpeed => Mathf.Max(1f, Config.projectileSpeed + bonusProjectileSpeed);
     public float ProjectileRange => Mathf.Max(1f, Config.projectileRange + bonusProjectileRange);
     public float MoveSpeed => Mathf.Max(0.1f, Config.moveSpeed + bonusMoveSpeed);
+    public int MeleeAttackDamage => Mathf.Max(1, Config.meleeAttackDamage + bonusMeleeAttackDamage);
+    public float MeleeAttackRange => Mathf.Max(0.1f, Config.meleeAttackRange + bonusMeleeAttackRange);
+    public float MeleeAttackCooldown => Mathf.Max(0.05f, Config.meleeAttackCooldown + bonusMeleeAttackCooldown);
+    public int MaxMana => Mathf.Max(1, Config.maxMana + bonusMaxMana);
+    public int CurrentMana => currentMana;
+    public int ManaCostPerShot => Mathf.Max(1, Config.manaCostPerShot + bonusManaCostPerShot);
+    public float ManaRegenPerSecond => Mathf.Max(0f, Config.manaRegenPerSecond);
 
     public PlayerStatsConfig Config
     {
@@ -44,6 +58,7 @@ public class PlayerStats : MonoBehaviour
     }
 
     public event Action OnStatsChanged;
+    public event Action<int, int> OnManaChanged;
 
     private void Awake()
     {
@@ -54,6 +69,72 @@ public class PlayerStats : MonoBehaviour
     private void Start()
     {
         ApplyStatsToComponents();
+    }
+
+    private void Update()
+    {
+        RegenerateMana();
+    }
+
+    /// <summary>
+    /// 远程攻击消耗法力，不足时返回 false。
+    /// </summary>
+    public bool TryConsumeMana(int amount)
+    {
+        if (amount <= 0)
+            return true;
+
+        if (currentMana < amount)
+            return false;
+
+        currentMana -= amount;
+        OnManaChanged?.Invoke(currentMana, MaxMana);
+        return true;
+    }
+
+    private void RegenerateMana()
+    {
+        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
+            return;
+
+        float regenRate = ManaRegenPerSecond;
+        if (regenRate <= 0f || currentMana >= MaxMana)
+            return;
+
+        manaRegenAccumulator += regenRate * Time.deltaTime;
+        if (manaRegenAccumulator < 1f)
+            return;
+
+        int restored = Mathf.FloorToInt(manaRegenAccumulator);
+        manaRegenAccumulator -= restored;
+        int before = currentMana;
+        currentMana = Mathf.Min(MaxMana, currentMana + restored);
+        if (currentMana != before)
+            OnManaChanged?.Invoke(currentMana, MaxMana);
+    }
+
+    public void ApplyShopUpgradeLevels(int healthLevel, int meleeLevel, int rangedLevel, int manaLevel)
+    {
+        bonusMaxHealth = 0;
+        bonusDefense = 0;
+        bonusAttackDamage = 0;
+        bonusFireCooldown = 0;
+        bonusProjectileSpeed = 0;
+        bonusProjectileRange = 0;
+        bonusMoveSpeed = 0;
+        bonusMeleeAttackDamage = 0;
+        bonusMeleeAttackRange = 0;
+        bonusMeleeAttackCooldown = 0;
+        bonusMaxMana = 0;
+        bonusManaCostPerShot = 0;
+
+        bonusMaxHealth = healthLevel * 15;
+        bonusMeleeAttackDamage = meleeLevel * 4;
+        bonusAttackDamage = rangedLevel * 3;
+        bonusMaxMana = manaLevel * 10;
+
+        ApplyStatsToComponents();
+        OnStatsChanged?.Invoke();
     }
 
     /// <summary>
@@ -84,6 +165,21 @@ public class PlayerStats : MonoBehaviour
             case PlayerStatType.MoveSpeed:
                 bonusMoveSpeed += value;
                 break;
+            case PlayerStatType.MeleeAttackDamage:
+                bonusMeleeAttackDamage += Mathf.RoundToInt(value);
+                break;
+            case PlayerStatType.MeleeAttackRange:
+                bonusMeleeAttackRange += value;
+                break;
+            case PlayerStatType.MeleeAttackCooldown:
+                bonusMeleeAttackCooldown += value;
+                break;
+            case PlayerStatType.MaxMana:
+                bonusMaxMana += Mathf.RoundToInt(value);
+                break;
+            case PlayerStatType.ManaCostPerShot:
+                bonusManaCostPerShot += Mathf.RoundToInt(value);
+                break;
         }
 
         ApplyStatsToComponents();
@@ -109,6 +205,17 @@ public class PlayerStats : MonoBehaviour
 
         if (playerController != null)
             playerController.SetMoveSpeed(MoveSpeed);
+
+        InitializeMana(refillToMax: currentMana <= 0);
+    }
+
+    private void InitializeMana(bool refillToMax)
+    {
+        int maxMana = MaxMana;
+        if (refillToMax || currentMana > maxMana)
+            currentMana = maxMana;
+
+        OnManaChanged?.Invoke(currentMana, maxMana);
     }
 
     public static PlayerStats GetOrCreate(GameObject player)

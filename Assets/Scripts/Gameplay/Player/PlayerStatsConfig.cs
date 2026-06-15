@@ -16,6 +16,16 @@ public class PlayerStatsConfig : ScriptableObject
     [Min(1f)] public float projectileSpeed = 14f;
     [Min(1f)] public float projectileRange = 7f;
 
+    [Header("法力")]
+    [Min(1)] public int maxMana = 100;
+    [Min(1)] public int manaCostPerShot = 15;
+    [Min(0f)] public float manaRegenPerSecond = 8f;
+
+    [Header("近战")]
+    [Min(1)] public int meleeAttackDamage = 20;
+    [Min(0.1f)] public float meleeAttackRange = 1.2f;
+    [Min(0.1f)] public float meleeAttackCooldown = 0.4f;
+
     [Header("移动")]
     [Min(0.1f)] public float moveSpeed = 4f;
 

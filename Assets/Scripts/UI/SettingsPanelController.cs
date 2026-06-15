@@ -11,6 +11,9 @@ public class SettingsPanelController : MonoBehaviour
     [SerializeField] private Button closeButton;
     [SerializeField] private Button quitGameButton;
 
+    [Header("音量调节")]
+    [SerializeField] private Slider volumeSlider;
+
     private void Awake()
     {
         if (closeButton != null)
@@ -18,6 +21,9 @@ public class SettingsPanelController : MonoBehaviour
 
         if (quitGameButton != null)
             quitGameButton.onClick.AddListener(QuitGame);
+
+        ResolveVolumeSlider();
+        BindVolumeSlider();
     }
 
     private void Start()
@@ -28,6 +34,9 @@ public class SettingsPanelController : MonoBehaviour
     public void OpenPanel()
     {
         gameObject.SetActive(true);
+
+        if (volumeSlider != null)
+            volumeSlider.SetValueWithoutNotify(AudioSettings.Volume);
     }
 
     public void ClosePanel()
@@ -44,6 +53,43 @@ public class SettingsPanelController : MonoBehaviour
 #endif
     }
 
+    private void ResolveVolumeSlider()
+    {
+        if (volumeSlider != null)
+            return;
+
+        Slider[] sliders = GetComponentsInChildren<Slider>(true);
+        foreach (Slider slider in sliders)
+        {
+            string name = slider.gameObject.name.ToLowerInvariant();
+            if (name.Contains("volume") || name.Contains("音量"))
+            {
+                volumeSlider = slider;
+                return;
+            }
+        }
+
+        if (sliders.Length > 0)
+            volumeSlider = sliders[0];
+    }
+
+    private void BindVolumeSlider()
+    {
+        if (volumeSlider == null)
+        {
+            Debug.LogWarning("SettingsPanelController: 未找到音量滑条。");
+            return;
+        }
+
+        volumeSlider.SetValueWithoutNotify(AudioSettings.Volume);
+        volumeSlider.onValueChanged.AddListener(OnVolumeChanged);
+    }
+
+    private static void OnVolumeChanged(float value)
+    {
+        AudioSettings.SetVolume(value);
+    }
+
     private void OnDestroy()
     {
         if (closeButton != null)
@@ -51,5 +97,8 @@ public class SettingsPanelController : MonoBehaviour
 
         if (quitGameButton != null)
             quitGameButton.onClick.RemoveListener(QuitGame);
+
+        if (volumeSlider != null)
+            volumeSlider.onValueChanged.RemoveListener(OnVolumeChanged);
     }
 }

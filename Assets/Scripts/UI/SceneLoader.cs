@@ -17,4 +17,11 @@ public static class SceneLoader
         Time.timeScale = 1f;
         SceneManager.LoadScene(sceneName);
     }
+
+    public static void LoadNewRun(string sceneName)
+    {
+        RunProgression.ResetRun();
+        ShopUI.ResetState();
+        Load(sceneName);
+    }
 }
