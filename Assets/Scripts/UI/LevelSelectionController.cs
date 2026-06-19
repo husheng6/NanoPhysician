@@ -25,6 +25,11 @@ public class LevelSelectionController : MonoBehaviour
         BindButton(level3Button, LoadLevel3);
     }
 
+    private void Start()
+    {
+        LevelReturnButtonUI.SetupForLevelSelection(transform);
+    }
+
     /// <summary>
     /// Inspector 未拖引用时，按子物体名称自动查找按钮。
     /// </summary>
@@ -33,6 +38,9 @@ public class LevelSelectionController : MonoBehaviour
         var buttons = GetComponentsInChildren<Button>(true);
         foreach (var button in buttons)
         {
+            if (button.gameObject.name == "ReturnButton")
+                continue;
+
             switch (button.gameObject.name)
             {
                 case "level1":
@@ -74,6 +82,8 @@ public class LevelSelectionController : MonoBehaviour
 
     private void OnDestroy()
     {
+        LevelReturnButtonUI.ResetState();
+
         if (level1Button != null)
             level1Button.onClick.RemoveListener(LoadLevel1);
 

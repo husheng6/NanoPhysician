@@ -94,7 +94,7 @@ public class PlayerStats : MonoBehaviour
 
     private void RegenerateMana()
     {
-        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
+        if (LevelGameFlow.IsGameplayFrozen)
             return;
 
         float regenRate = ManaRegenPerSecond;

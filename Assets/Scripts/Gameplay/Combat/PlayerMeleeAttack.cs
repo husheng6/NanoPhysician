@@ -28,7 +28,7 @@ public class PlayerMeleeAttack : MonoBehaviour
 
     private void Update()
     {
-        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
+        if (LevelGameFlow.IsGameplayFrozen)
             return;
 
         if (!Input.GetMouseButtonDown(meleeMouseButton))

@@ -7,14 +7,18 @@ using UnityEngine.SceneManagement;
 public static class LevelGameFlow
 {
     private const string StartSceneName = "startScene";
+    private const string LevelSelectionSceneName = "levelselectionScene";
 
     private static bool isGameOver;
     private static bool isVictory;
+    private static bool isReturnDialogOpen;
 
     public static bool IsGameOver => isGameOver;
     public static bool IsVictory => isVictory;
     public static bool IsLevelEnded => isGameOver || isVictory;
+    public static bool IsReturnDialogOpen => isReturnDialogOpen;
     public static bool IsIntroActive { get; private set; }
+    public static bool IsGameplayFrozen => IsLevelEnded || IsIntroActive || isReturnDialogOpen;
 
     public static void SetIntroActive(bool active)
     {
@@ -25,8 +29,10 @@ public static class LevelGameFlow
     {
         isGameOver = false;
         isVictory = false;
+        isReturnDialogOpen = false;
         IsIntroActive = false;
         Time.timeScale = 1f;
+        LevelReturnConfirmUI.Hide();
     }
 
     public static void RegisterPlayer(Health playerHealth)
@@ -75,6 +81,37 @@ public static class LevelGameFlow
         ResetState();
         RunProgression.ResetRun();
         ShopUI.ResetState();
+        LevelReturnButtonUI.ResetState();
+        LevelReturnConfirmUI.ResetState();
         SceneLoader.Load(StartSceneName);
+    }
+
+    public static void RequestReturnToLevelSelection()
+    {
+        if (IsLevelEnded || IsIntroActive || isReturnDialogOpen)
+            return;
+
+        isReturnDialogOpen = true;
+        Time.timeScale = 0f;
+        LevelReturnConfirmUI.Show();
+    }
+
+    public static void ConfirmReturnToLevelSelection()
+    {
+        ResetState();
+        ShopUI.ResetState();
+        LevelReturnButtonUI.ResetState();
+        LevelReturnConfirmUI.ResetState();
+        SceneLoader.Load(LevelSelectionSceneName);
+    }
+
+    public static void CancelReturnToLevelSelection()
+    {
+        if (!isReturnDialogOpen)
+            return;
+
+        isReturnDialogOpen = false;
+        Time.timeScale = 1f;
+        LevelReturnConfirmUI.Hide();
     }
 }

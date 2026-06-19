@@ -56,7 +56,7 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if (LevelGameFlow.IsLevelEnded || !selfHealth.IsAlive)
+        if (LevelGameFlow.IsGameplayFrozen || !selfHealth.IsAlive)
             return;
 
         if (playerTransform == null || playerHealth == null)

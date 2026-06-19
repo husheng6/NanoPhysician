@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
+        if (LevelGameFlow.IsGameplayFrozen)
             return;
 
         moveInput.x = Input.GetAxisRaw("Horizontal");

@@ -24,7 +24,7 @@ public class PlayerShooting : MonoBehaviour
 
     private void Update()
     {
-        if (LevelGameFlow.IsLevelEnded || LevelGameFlow.IsIntroActive)
+        if (LevelGameFlow.IsGameplayFrozen)
             return;
 
         if (!Input.GetMouseButtonDown(aimMouseButton))

@@ -88,7 +88,7 @@ public class Level1SegmentDialogueTrigger : MonoBehaviour
         if (dialogueActive || player == null || segments == null)
             return;
 
-        if (LevelGameFlow.IsIntroActive || LevelGameFlow.IsLevelEnded)
+        if (LevelGameFlow.IsGameplayFrozen || LevelGameFlow.IsLevelEnded)
             return;
 
         foreach (SegmentEntry segment in segments)
