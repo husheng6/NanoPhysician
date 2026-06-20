@@ -84,7 +84,7 @@ public class RangedEnemyController : MonoBehaviour
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
 
-        if (!isAggro && distanceToPlayer <= detectRange)
+        if (!isAggro && distanceToPlayer <= detectRange && Level3CombatAggro.AllowsPassiveAggro())
             isAggro = true;
 
         if (!isAggro)
@@ -140,6 +140,11 @@ public class RangedEnemyController : MonoBehaviour
         position.x = Mathf.Clamp(position.x, mapBounds.min.x + clampHalfSize, mapBounds.max.x - clampHalfSize);
         position.y = Mathf.Clamp(position.y, mapBounds.min.y + clampHalfSize, mapBounds.max.y - clampHalfSize);
         return position;
+    }
+
+    public void ForceAggro()
+    {
+        isAggro = true;
     }
 
     private void HandleDeath()

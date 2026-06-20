@@ -64,6 +64,8 @@ public class PlayerMeleeAttack : MonoBehaviour
 
     private void PerformMeleeAttack(Vector2 direction)
     {
+        Level3CombatAggro.NotifyPlayerAttacked();
+
         playerController.SetFacingFromDirection(direction);
 
         // 播放近战攻击动画与音效

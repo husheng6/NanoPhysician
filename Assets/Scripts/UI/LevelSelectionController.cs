@@ -67,17 +67,17 @@ public class LevelSelectionController : MonoBehaviour
 
     public void LoadLevel1()
     {
-        SceneLoader.LoadNewRun(level1SceneName);
+        SceneLoader.Load(level1SceneName);
     }
 
     public void LoadLevel2()
     {
-        SceneLoader.LoadNewRun(level2SceneName);
+        SceneLoader.Load(level2SceneName);
     }
 
     public void LoadLevel3()
     {
-        SceneLoader.LoadNewRun(level3SceneName);
+        SceneLoader.Load(level3SceneName);
     }
 
     private void OnDestroy()

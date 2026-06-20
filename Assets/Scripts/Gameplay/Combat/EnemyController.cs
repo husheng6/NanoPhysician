@@ -71,7 +71,7 @@ public class EnemyController : MonoBehaviour
 
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
 
-        if (!isAggro && distanceToPlayer <= detectRange)
+        if (!isAggro && distanceToPlayer <= detectRange && Level3CombatAggro.AllowsPassiveAggro())
             isAggro = true;
 
         if (!isAggro)
@@ -150,6 +150,11 @@ public class EnemyController : MonoBehaviour
             mapBounds.min.y + clampHalfSize,
             mapBounds.max.y - clampHalfSize);
         return position;
+    }
+
+    public void ForceAggro()
+    {
+        isAggro = true;
     }
 
     private void HandleDeath()

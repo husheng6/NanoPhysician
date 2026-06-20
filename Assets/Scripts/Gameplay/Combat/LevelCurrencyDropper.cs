@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
-/// 每关随机指定 1-3 个敌人掉落货币。
+/// 按关卡配置敌人掉落货币数量。
 /// </summary>
 public static class LevelCurrencyDropper
 {
+    private const string Level1SceneName = "level1Scence";
+    private const string Level2SceneName = "level2Scence";
+
     private static readonly Dictionary<Health, Action> deathHandlers = new Dictionary<Health, Action>();
 
     public static void ResetState()
@@ -31,11 +35,34 @@ public static class LevelCurrencyDropper
         if (candidates.Count == 0)
             return;
 
-        int dropCount = Mathf.Min(UnityEngine.Random.Range(1, 4), candidates.Count);
+        int dropCount = GetDropCount(candidates.Count);
         Shuffle(candidates);
 
         for (int i = 0; i < dropCount; i++)
             RegisterDropper(candidates[i]);
+    }
+
+    private static int GetDropCount(int candidateCount)
+    {
+        if (candidateCount <= 0)
+            return 0;
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        int target;
+
+        switch (sceneName)
+        {
+            case Level1SceneName:
+            case Level2SceneName:
+                // 第一、二关约 15 个，略有浮动
+                target = UnityEngine.Random.Range(14, 17);
+                break;
+            default:
+                target = UnityEngine.Random.Range(1, 4);
+                break;
+        }
+
+        return Mathf.Min(target, candidateCount);
     }
 
     private static void RegisterDropper(Health health)

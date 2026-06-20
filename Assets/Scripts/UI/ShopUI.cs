@@ -2,6 +2,7 @@ using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -284,6 +285,29 @@ public class ShopUI : MonoBehaviour
             return;
 
         CombatCurrencyHUD.SetVisible(true);
+        ShowPostShopFlow();
+    }
+
+    private static void ShowPostShopFlow()
+    {
+        if (Level1VictoryDialogueRunner.ShouldPlayForCurrentScene())
+        {
+            Level1VictoryDialogueRunner.Play(() => LevelVictoryUI.Show(pendingNextScene));
+            return;
+        }
+
+        if (Level2VictoryDialogueRunner.ShouldPlayForCurrentScene())
+        {
+            Level2VictoryDialogueRunner.Play(() => LevelVictoryUI.Show(pendingNextScene));
+            return;
+        }
+
+        if (Level3VictoryDialogueRunner.ShouldPlayForCurrentScene())
+        {
+            Level3VictoryDialogueRunner.Play(() => LevelVictoryUI.Show(pendingNextScene));
+            return;
+        }
+
         LevelVictoryUI.Show(pendingNextScene);
     }
 

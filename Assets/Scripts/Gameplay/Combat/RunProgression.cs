@@ -1,7 +1,7 @@
 using System;
 
 /// <summary>
-/// 单局闯关进度：货币与商店升级等级，跨关卡保留。
+/// 单局闯关进度：货币与商店升级等级跨关卡保留；挑战失败后仍保留，可在首页商城继续强化。
 /// </summary>
 public static class RunProgression
 {

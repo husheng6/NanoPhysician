@@ -70,6 +70,8 @@ public class PlayerShooting : MonoBehaviour
 
     private void Fire(Vector2 direction)
     {
+        Level3CombatAggro.NotifyPlayerAttacked();
+
         playerController.SetFacingFromDirection(direction);
         SfxManager.PlayRanged();
 

@@ -1,4 +1,4 @@
-%YAML 1.1
+﻿%YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
 --- !u!1 &1166934547862732701
 GameObject:
@@ -122,6 +122,7 @@ MonoBehaviour:
   closeButton: {fileID: 3825604754987634625}
   quitGameButton: {fileID: 6648648246426321876}
   volumeSlider: {fileID: 0}
+  sfxVolumeSlider: {fileID: 0}
 --- !u!1 &2189410732846251127
 GameObject:
   m_ObjectHideFlags: 0
@@ -319,7 +320,7 @@ GameObject:
   - component: {fileID: 5942603237829315742}
   - component: {fileID: 1300353635232700791}
   m_Layer: 5
-  m_Name: Slider
+  m_Name: Volume Slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

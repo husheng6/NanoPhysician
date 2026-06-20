@@ -28,6 +28,9 @@ public static class LevelCombatBootstrap
         LevelVictoryTracker.ResetState();
         LevelCurrencyDropper.ResetState();
         Level1SegmentDialogueTrigger.ResetState();
+        Level2SegmentDialogueTrigger.ResetState();
+        Level3SegmentDialogueTrigger.ResetState();
+        Level3CombatAggro.ResetState();
         LevelReturnButtonUI.ResetState();
         LevelReturnConfirmUI.ResetState();
         PlayerMovementBounds.ClearArena();
@@ -46,16 +49,27 @@ public static class LevelCombatBootstrap
                 });
                 break;
             case Level2SceneName:
-                SetupLevel(PlayerCombatSetup.Setup, SetupLevel2Spawner);
-                BeginVictoryTracking(GetNextSceneName(scene.name));
-                LevelCurrencyDropper.SetupForCurrentLevel();
-                LevelReturnButtonUI.SetupForLevel();
+                SetupLevel(PlayerCombatSetup.Setup, null);
+                Level2IntroDialogueRunner.Play(() =>
+                {
+                    BgmManager.PlayBattle();
+                    SetupLevel2Spawner();
+                    Level2SegmentDialogueTrigger.Setup();
+                    BeginVictoryTracking(GetNextSceneName(scene.name));
+                    LevelCurrencyDropper.SetupForCurrentLevel();
+                    LevelReturnButtonUI.SetupForLevel();
+                });
                 break;
             case Level3SceneName:
-                SetupLevel(PlayerCombatSetup.Setup, SetupLevel3Spawner);
-                BeginVictoryTracking(null);
-                LevelCurrencyDropper.SetupForCurrentLevel();
-                LevelReturnButtonUI.SetupForLevel();
+                SetupLevel(PlayerCombatSetup.Setup, null);
+                Level3IntroDialogueRunner.Play(() =>
+                {
+                    SetupLevel3Spawner();
+                    Level3SegmentDialogueTrigger.Setup();
+                    BeginVictoryTracking(null);
+                    LevelCurrencyDropper.SetupForCurrentLevel();
+                    LevelReturnButtonUI.SetupForLevel();
+                });
                 break;
         }
     }
@@ -88,8 +102,11 @@ public static class LevelCombatBootstrap
     private static void ApplyBackgroundBlur()
     {
         GameObject backgroundGroup = GameObject.Find("BackgroundGroup");
-        if (backgroundGroup != null)
-            BackgroundBlurEffect.ApplyToMap(backgroundGroup.transform);
+        if (backgroundGroup == null)
+            return;
+
+        BattleBackgroundLayout.Apply(backgroundGroup.transform);
+        BackgroundBlurEffect.ApplyToMap(backgroundGroup.transform);
     }
 
     private static void SetupLevel1Spawner()

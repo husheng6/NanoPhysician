@@ -79,7 +79,6 @@ public static class LevelGameFlow
     public static void ReturnToStartScene()
     {
         ResetState();
-        RunProgression.ResetRun();
         ShopUI.ResetState();
         LevelReturnButtonUI.ResetState();
         LevelReturnConfirmUI.ResetState();
