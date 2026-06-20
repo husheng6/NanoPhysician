@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// 进入主页或选关界面时重置单局进度，避免上一局货币/升级残留。
+/// 进入主页或选关界面时清理商店 UI 实例；货币与强化等级保留，供首页商城继续消费。
 /// </summary>
 public static class RunProgressionSceneReset
 {
@@ -22,7 +22,6 @@ public static class RunProgressionSceneReset
         if (scene.name != StartSceneName && scene.name != LevelSelectionSceneName)
             return;
 
-        RunProgression.ResetRun();
         ShopUI.ResetState();
     }
 }

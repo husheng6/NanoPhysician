@@ -18,7 +18,7 @@ public class PlayerStatsConfig : ScriptableObject
 
     [Header("法力")]
     [Min(1)] public int maxMana = 100;
-    [Min(1)] public int manaCostPerShot = 15;
+    [Min(1)] public int manaCostPerShot = 10;
     [Min(0f)] public float manaRegenPerSecond = 8f;
 
     [Header("近战")]

@@ -30,6 +30,7 @@ public class BossController : MonoBehaviour
     private Transform mapRoot;
     private bool isAggro;
     private bool arenaLocked;
+    private bool minionsCleared;
     private Bounds fightArena;
     private bool hasFightArena;
     private float lastMeleeTime;
@@ -86,13 +87,11 @@ public class BossController : MonoBehaviour
         float distanceToPlayer = Vector2.Distance(transform.position, playerTransform.position);
 
         if (!arenaLocked && hasFightArena && IsPlayerInsideFightArena())
-        {
-            isAggro = true;
             LockArenaForFight();
-        }
-        else if (!isAggro && distanceToPlayer <= detectRange)
+        else if (!isAggro && distanceToPlayer <= detectRange && Level3CombatAggro.AllowsPassiveAggro())
         {
             isAggro = true;
+            ClearMinions();
         }
 
         if (!isAggro)
@@ -183,13 +182,42 @@ public class BossController : MonoBehaviour
             && playerPosition.y <= fightArena.max.y;
     }
 
+    public void ForceAggro()
+    {
+        isAggro = true;
+        ClearMinions();
+    }
+
     private void LockArenaForFight()
     {
         if (arenaLocked || !hasFightArena)
             return;
 
         arenaLocked = true;
+        ClearMinions();
         PlayerMovementBounds.LockArena(fightArena);
+    }
+
+    private void ClearMinions()
+    {
+        if (minionsCleared)
+            return;
+
+        minionsCleared = true;
+
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        foreach (GameObject enemy in enemies)
+        {
+            if (enemy == null || enemy == gameObject)
+                continue;
+
+            if (enemy.GetComponent<BossController>() != null)
+                continue;
+
+            Health health = enemy.GetComponent<Health>();
+            if (health != null && health.IsAlive)
+                health.TakeDamage(health.CurrentHealth);
+        }
     }
 
     private void UpdateFacing(Vector2 direction)

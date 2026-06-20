@@ -26,10 +26,10 @@ public static class SfxManager
 
     private static void PlayOneShot(AudioClip clip)
     {
-        if (clip == null)
+        if (clip == null || AudioSettings.SfxVolume <= 0f)
             return;
 
-        EnsureHost().Source.PlayOneShot(clip);
+        EnsureHost().Source.PlayOneShot(clip, AudioSettings.SfxVolume);
     }
 
     private static SfxAudioHost EnsureHost()
